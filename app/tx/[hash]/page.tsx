@@ -7,7 +7,7 @@ import {
   parseAbiItem,
 } from "viem";
 import Search from "@/components/search";
-import { DECIMALS, SYMBOL } from "@/lib/constants";
+import { TOKEN } from "@/lib/constants";
 
 const client = createPublicClient({
   transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
@@ -34,6 +34,7 @@ export default async function TxPage({
     let transferFrom = tx.from;
     let transferTo = tx.to;
 
+
     for (const log of receipt.logs) {
       try {
         const parsed = decodeEventLog({
@@ -45,6 +46,7 @@ export default async function TxPage({
           value = parsed.args.value as bigint;
           transferFrom = parsed.args.from as `0x${string}`;
           transferTo = parsed.args.to as `0x${string}`;
+
           break;
         }
       } catch {
@@ -61,7 +63,7 @@ export default async function TxPage({
           <div>From: {transferFrom}</div>
           <div>To: {transferTo}</div>
           <div>
-            
+
           </div>
         </div>
       </main>
