@@ -15,10 +15,13 @@ const transferEvent = parseAbiItem(
 );
 const decimalsFn = parseAbiItem("function decimals() view returns (uint8)");
 
-type Props = { params: { hash: `0x${string}` } };
-
-export default async function TxPage({ params }: Props) {
-  const hash = params.hash;
+export default async function TxPage({
+  params,
+}: {
+  params: Promise<{ hash: string }>;
+}) {
+  const { hash } = await params;
+  const txHash = hash as `0x${string}`;
 
   const client = createPublicClient({
     transport: http(process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8545"),
@@ -26,17 +29,17 @@ export default async function TxPage({ params }: Props) {
 
   try {
     const [tx, receipt] = await Promise.all([
-      client.getTransaction({ hash }),
-      client.getTransactionReceipt({ hash }),
+      client.getTransaction({ hash: txHash }),
+      client.getTransactionReceipt({ hash: txHash }),
     ]);
 
     // 既定: ネイティブ送金の情報
     let value: bigint = tx.value;
     let transferFrom: `0x${string}` = tx.from as `0x${string}`;
     let transferTo: `0x${string}` | null = (tx.to as `0x${string}`) ?? null;
-    let decimals: number = TOKEN.DECIMALS;
+    let decimals: number = TOKEN.DECIMALS; // ← 既定は 8
 
-    // ERC-20 Transfer ログがあれば上書き
+    // ERC-20 Transfer ログがあれば、値と小数桁を上書き
     for (const log of receipt.logs) {
       try {
         const parsed = decodeEventLog({
@@ -44,26 +47,32 @@ export default async function TxPage({ params }: Props) {
           data: log.data,
           topics: log.topics,
         });
+
         if (parsed.eventName === "Transfer") {
           value = parsed.args.value as bigint;
           transferFrom = parsed.args.from as `0x${string}`;
           transferTo = parsed.args.to as `0x${string}`;
 
-          // decimals をコントラクトから取得（失敗時は既定のまま）
+          // decimals を読み取り、異常値はフォールバック（0/NaN/極端に大きい等）
           try {
             const d = (await client.readContract({
               address: log.address as `0x${string}`,
               abi: [decimalsFn],
               functionName: "decimals",
             })) as number;
-            if (Number.isFinite(d)) decimals = d;
+
+            const dNum = Number(d);
+            if (Number.isFinite(dNum) && dNum > 0 && dNum <= 36) {
+              decimals = dNum;
+            } // それ以外は TOKEN.DECIMALS=8 を維持
           } catch {
-            /* ignore */
+            // 読み取り失敗時は既定(8)のまま
           }
+
           break;
         }
       } catch {
-        /* not a Transfer log — ignore */
+        // not a Transfer log — ignore
       }
     }
 
@@ -75,9 +84,7 @@ export default async function TxPage({ params }: Props) {
           <div className="mb-2 break-all font-mono">Hash: {tx.hash}</div>
           <div>From: {transferFrom ?? "-"}</div>
           <div>To: {transferTo ?? "-"}</div>
-          <div>
-            Value: {formatUnits(value, decimals)} {TOKEN.SYMBOL}
-          </div>
+          <div>Value: {formatUnits(value, decimals)} {TOKEN.SYMBOL}</div>
         </div>
       </main>
     );
