@@ -1,9 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Search from "@/components/search";
-
-type Block = { number: number; hash: string };
 
 export default function Home() {
   const [height, setHeight] = useState<number | null>(null);
@@ -31,8 +28,6 @@ export default function Home() {
   return (
     <main className="mx-auto max-w-5xl p-6">
       <h1 className="text-3xl font-bold mb-6">PGirlsChain Explorer</h1>
-
-      <Search />
 
       {loading ? (
         <p>Loading…</p>
