@@ -1,3 +1,4 @@
+// app/tx/[hash]/page.tsx
 import { notFound } from "next/navigation";
 import {
   createPublicClient,
@@ -14,26 +15,28 @@ const transferEvent = parseAbiItem(
 );
 const decimalsFn = parseAbiItem("function decimals() view returns (uint8)");
 
-export default async function TxPage(props: {
-  params: Promise<{ hash: string }>;
-}) {
-  const { hash } = await props.params;
-  const hash0x = hash as `0x${string}`;
+type Props = { params: { hash: `0x${string}` } };
+
+export default async function TxPage({ params }: Props) {
+  const hash = params.hash;
+
   const client = createPublicClient({
     transport: http(process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8545"),
   });
+
   try {
     const [tx, receipt] = await Promise.all([
-      client.getTransaction({ hash: hash0x }),
-      client.getTransactionReceipt({ hash: hash0x }),
+      client.getTransaction({ hash }),
+      client.getTransactionReceipt({ hash }),
     ]);
 
-    // Default to raw transaction fields; ERC-20 logs may overwrite these
-    let value = tx.value;
-    let transferFrom: `0x${string}` = tx.from;
-    let transferTo: `0x${string}` | null = tx.to;
+    // 既定: ネイティブ転送の from/to/value
+    let value: bigint = tx.value;
+    let transferFrom: `0x${string}` = tx.from as `0x${string}`;
+    let transferTo: `0x${string}` | null = (tx.to as `0x${string}`) ?? null;
     let decimals: number = TOKEN.DECIMALS;
 
+    // ERC-20 Transfer があれば、値と小数桁を上書き
     for (const log of receipt.logs) {
       try {
         const parsed = decodeEventLog({
@@ -45,19 +48,22 @@ export default async function TxPage(props: {
           value = parsed.args.value as bigint;
           transferFrom = parsed.args.from as `0x${string}`;
           transferTo = parsed.args.to as `0x${string}`;
+
+          // トークンコントラクトから decimals を取得（失敗時は既定のまま）
           try {
-            decimals = (await client.readContract({
+            const d = (await client.readContract({
               address: log.address as `0x${string}`,
               abi: [decimalsFn],
               functionName: "decimals",
             })) as number;
+            if (Number.isFinite(d)) decimals = d;
           } catch {
-            // fallback to configured decimals
+            /* ignore */
           }
           break;
         }
       } catch {
-        // not an ERC20 Transfer log
+        /* not a Transfer log — ignore */
       }
     }
 
@@ -67,8 +73,8 @@ export default async function TxPage(props: {
         <h1 className="mb-4 text-2xl font-semibold">Transaction Details</h1>
         <div className="rounded border p-4">
           <div className="mb-2 break-all font-mono">Hash: {tx.hash}</div>
-          <div>From: {transferFrom}</div>
-          <div>To: {transferTo}</div>
+          <div>From: {transferFrom ?? "-"}</div>
+          <div>To: {transferTo ?? "-"}</div>
           <div>
             Value: {formatUnits(value, decimals)} {TOKEN.SYMBOL}
           </div>
@@ -79,4 +85,3 @@ export default async function TxPage(props: {
     notFound();
   }
 }
-
