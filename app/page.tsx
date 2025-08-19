@@ -135,11 +135,11 @@ export default function Home() {
               <div className="text-2xl font-semibold">{height ?? "-"}</div>
             </div>
             <div className="rounded-2xl p-4 shadow">
-              <div className="text-sm opacity-70">Tx/s (mock)</div>
+              <div className="text-sm opacity-70">Tx/s</div>
               <div className="text-2xl font-semibold">—</div>
             </div>
             <div className="rounded-2xl p-4 shadow">
-              <div className="text-sm opacity-70">Peers (mock)</div>
+              <div className="text-sm opacity-70">Peers</div>
               <div className="text-2xl font-semibold">—</div>
             </div>
           </div>
