@@ -4,10 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createPublicClient, http } from "viem";
 
-const client = createPublicClient({
-  transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
-});
-
 export default function Search() {
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +16,11 @@ export default function Search() {
       router.push(`/tx/${q}`);
     } else if (/^0x[a-fA-F0-9]{40}$/.test(q)) {
       try {
+        const client = createPublicClient({
+          transport: http(
+            process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8545"
+          ),
+        });
         const code = await client.getCode({ address: q as `0x${string}` });
         router.push(code !== "0x" ? `/contract/${q}` : `/address/${q}`);
       } catch {

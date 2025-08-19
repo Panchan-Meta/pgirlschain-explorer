@@ -3,10 +3,6 @@ import { createPublicClient, formatUnits, http } from "viem";
 import Search from "@/components/search";
 import { TOKEN } from "@/lib/constants";
 
-const client = createPublicClient({
-  transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
-});
-
 
 export default async function AddressPage({
   params,
@@ -14,6 +10,9 @@ export default async function AddressPage({
   params: Promise<{ address: string }>;
 }) {
   const address = (await params).address as `0x${string}`;
+  const client = createPublicClient({
+    transport: http(process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8545"),
+  });
   try {
     const [balance, code] = await Promise.all([
       client.getBalance({ address }),

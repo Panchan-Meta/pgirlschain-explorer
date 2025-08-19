@@ -9,10 +9,6 @@ interface Block {
   number: number;
 }
 
-const client = createPublicClient({
-  transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
-});
-
 export default function Home() {
   const [height, setHeight] = useState<number | null>(null);
   const [latest, setLatest] = useState<Block[]>([]);
@@ -20,6 +16,11 @@ export default function Home() {
 
   useEffect(() => {
     async function run() {
+      const client = createPublicClient({
+        transport: http(
+          process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8545"
+        ),
+      });
       try {
         const latestNumber = await client.getBlockNumber();
         setHeight(Number(latestNumber));

@@ -9,9 +9,6 @@ import {
 import Search from "@/components/search";
 import { TOKEN } from "@/lib/constants";
 
-const client = createPublicClient({
-  transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
-});
 
 const transferEvent = parseAbiItem(
   "event Transfer(address indexed from, address indexed to, uint256 value)"
@@ -24,6 +21,9 @@ export default async function TxPage({
   params: Promise<{ hash: string }>;
 }) {
   const hash = (await params).hash as `0x${string}`;
+  const client = createPublicClient({
+    transport: http(process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8545"),
+  });
   try {
     const [tx, receipt] = await Promise.all([
       client.getTransaction({ hash }),
