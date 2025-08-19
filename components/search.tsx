@@ -21,14 +21,9 @@ export default function Search() {
     } else if (/^0x[a-fA-F0-9]{40}$/.test(q)) {
       try {
         const code = await client.getCode({ address: q as `0x${string}` });
-        if (code !== "0x") {
-          router.push(`/contract/${q}`);
-        } else {
-          router.push(`/address/${q}`);
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Failed to lookup address");
+        router.push(code !== "0x" ? `/contract/${q}` : `/address/${q}`);
+      } catch {
+        router.push(`/address/${q}`);
       }
     } else {
       setError("Invalid search input");
