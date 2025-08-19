@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createPublicClient, formatUnits, http } from "viem";
 import Search from "@/components/search";
+import { DECIMALS, SYMBOL } from "@/lib/constants";
 
 const client = createPublicClient({
   transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
