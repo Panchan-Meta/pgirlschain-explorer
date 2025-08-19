@@ -17,7 +17,6 @@ const transferEvent = parseAbiItem(
   "event Transfer(address indexed from, address indexed to, uint256 value)"
 );
 
-
 export default async function TxPage({
   params,
 }: {
@@ -34,7 +33,6 @@ export default async function TxPage({
     let transferFrom = tx.from;
     let transferTo = tx.to;
 
-
     for (const log of receipt.logs) {
       try {
         const parsed = decodeEventLog({
@@ -46,7 +44,7 @@ export default async function TxPage({
           value = parsed.args.value as bigint;
           transferFrom = parsed.args.from as `0x${string}`;
           transferTo = parsed.args.to as `0x${string}`;
-
+          
           break;
         }
       } catch {
