@@ -7,7 +7,6 @@ const client = createPublicClient({
   transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
 });
 
-
 export default async function TxPage({
   params,
 }: {
