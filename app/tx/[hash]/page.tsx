@@ -9,10 +9,11 @@ import {
 import Search from "@/components/search";
 import { TOKEN } from "@/lib/constants";
 
+
 const transferEvent = parseAbiItem(
   "event Transfer(address indexed from, address indexed to, uint256 value)"
 );
-const decimalsFn = parseAbiItem("function decimals() view returns (uint8)");
+
 
 export default async function TxPage({
   params,
@@ -30,9 +31,7 @@ export default async function TxPage({
     ]);
 
     let value = tx.value;
-    let transferFrom: `0x${string}` = tx.from;
-    let transferTo: `0x${string}` | null = tx.to;
-    let decimals: number = TOKEN.DECIMALS;
+
 
     for (const log of receipt.logs) {
       try {
@@ -45,15 +44,7 @@ export default async function TxPage({
           value = parsed.args.value as bigint;
           transferFrom = parsed.args.from as `0x${string}`;
           transferTo = parsed.args.to as `0x${string}`;
-          try {
-            decimals = (await client.readContract({
-              address: log.address as `0x${string}`,
-              abi: [decimalsFn],
-              functionName: "decimals",
-            })) as number;
-          } catch {
-            // fallback to configured decimals
-          }
+
           break;
         }
       } catch {
@@ -70,7 +61,7 @@ export default async function TxPage({
           <div>From: {transferFrom}</div>
           <div>To: {transferTo}</div>
           <div>
-            Value: {formatUnits(value, decimals)} {TOKEN.SYMBOL}
+
           </div>
         </div>
       </main>
