@@ -30,13 +30,13 @@ export default async function TxPage({ params }: Props) {
       client.getTransactionReceipt({ hash }),
     ]);
 
-    // 既定: ネイティブ転送の from/to/value
+    // 既定: ネイティブ送金の情報
     let value: bigint = tx.value;
     let transferFrom: `0x${string}` = tx.from as `0x${string}`;
     let transferTo: `0x${string}` | null = (tx.to as `0x${string}`) ?? null;
     let decimals: number = TOKEN.DECIMALS;
 
-    // ERC-20 Transfer があれば、値と小数桁を上書き
+    // ERC-20 Transfer ログがあれば上書き
     for (const log of receipt.logs) {
       try {
         const parsed = decodeEventLog({
@@ -49,7 +49,7 @@ export default async function TxPage({ params }: Props) {
           transferFrom = parsed.args.from as `0x${string}`;
           transferTo = parsed.args.to as `0x${string}`;
 
-          // トークンコントラクトから decimals を取得（失敗時は既定のまま）
+          // decimals をコントラクトから取得（失敗時は既定のまま）
           try {
             const d = (await client.readContract({
               address: log.address as `0x${string}`,
