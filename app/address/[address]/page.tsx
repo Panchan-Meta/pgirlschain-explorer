@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
-import { createPublicClient, formatEther, http } from "viem";
+import { createPublicClient, formatUnits, http } from "viem";
 import Search from "@/components/search";
 
 const client = createPublicClient({
   transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
 });
+
+const DECIMALS = 8;
+const SYMBOL = "PGIRLS";
 
 export default async function AddressPage({
   params,
@@ -26,7 +29,7 @@ export default async function AddressPage({
         </h1>
         <div className="rounded border p-4">
           <div className="mb-2 break-all font-mono">{address}</div>
-          <div>Balance: {formatEther(balance)} PGC</div>
+          <div>Balance: {formatUnits(balance, DECIMALS)} {SYMBOL}</div>
           <div>Type: {isContract ? "Contract" : "Externally Owned Account"}</div>
         </div>
       </main>

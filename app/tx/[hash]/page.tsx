@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { createPublicClient, formatEther, http } from "viem";
+import { createPublicClient, formatUnits, http } from "viem";
 import Search from "@/components/search";
 
 const client = createPublicClient({
@@ -24,7 +24,7 @@ export default async function TxPage({
           <div className="mb-2 break-all font-mono">Hash: {tx.hash}</div>
           <div>From: {tx.from}</div>
           <div>To: {tx.to}</div>
-          <div>Value: {formatEther(tx.value)} PGC</div>
+          <div>Value: {formatUnits(tx.value, DECIMALS)} {SYMBOL}</div>
         </div>
       </main>
     );
