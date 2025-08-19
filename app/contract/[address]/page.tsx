@@ -1,11 +1,7 @@
 import { notFound } from "next/navigation";
 import { createPublicClient, formatUnits, http } from "viem";
 import Search from "@/components/search";
-import { DECIMALS, SYMBOL } from "@/lib/constants";
-
-const client = createPublicClient({
-  transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
-});
+import { TOKEN } from "@/lib/constants";
 
 
 export default async function ContractPage({
@@ -14,6 +10,9 @@ export default async function ContractPage({
   params: Promise<{ address: string }>;
 }) {
   const address = (await params).address as `0x${string}`;
+  const client = createPublicClient({
+    transport: http(process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8545"),
+  });
   try {
     const [balance, code] = await Promise.all([
       client.getBalance({ address }),
@@ -28,7 +27,9 @@ export default async function ContractPage({
         <h1 className="mb-4 text-2xl font-semibold">Contract Details</h1>
         <div className="rounded border p-4">
           <div className="mb-2 break-all font-mono">{address}</div>
-          <div>Balance: {formatUnits(balance, DECIMALS)} {SYMBOL}</div>
+          <div>
+            Balance: {formatUnits(balance, TOKEN.DECIMALS)} {TOKEN.SYMBOL}
+          </div>
         </div>
       </main>
     );
