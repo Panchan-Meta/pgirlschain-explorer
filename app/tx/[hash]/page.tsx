@@ -33,7 +33,6 @@ export default async function TxPage({
     let transferFrom = tx.from;
     let transferTo = tx.to;
 
-
     for (const log of receipt.logs) {
       try {
         const parsed = decodeEventLog({
@@ -62,7 +61,6 @@ export default async function TxPage({
           <div>From: {transferFrom}</div>
           <div>To: {transferTo}</div>
           <div>
-
           </div>
         </div>
       </main>
