@@ -1,2 +1,2 @@
-export const DECIMALS = 8;
+export const DECIMALS = 7;
 export const SYMBOL = "PGIRLS";
