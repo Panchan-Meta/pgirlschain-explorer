@@ -17,7 +17,6 @@ const transferEvent = parseAbiItem(
   "event Transfer(address indexed from, address indexed to, uint256 value)"
 );
 
-
 export default async function TxPage({
   params,
 }: {
