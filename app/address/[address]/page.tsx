@@ -9,9 +9,9 @@ const client = createPublicClient({
 export default async function AddressPage({
   params,
 }: {
-  params: { address: string };
+  params: Promise<{ address: string }>;
 }) {
-  const address = params.address as `0x${string}`;
+  const address = (await params).address as `0x${string}`;
   try {
     const [balance, code] = await Promise.all([
       client.getBalance({ address }),
