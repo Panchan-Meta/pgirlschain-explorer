@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 
+interface Block {
+  hash: string;
+  number: number;
+}
+
 export default function Home() {
   const [height, setHeight] = useState<number | null>(null);
   const [latest, setLatest] = useState<Block[]>([]);

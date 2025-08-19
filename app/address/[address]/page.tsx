@@ -1,17 +1,19 @@
 import { notFound } from "next/navigation";
-import { createPublicClient, formatEther, http } from "viem";
+import { createPublicClient, formatUnits, http } from "viem";
 import Search from "@/components/search";
+import { DECIMALS, SYMBOL } from "@/lib/constants";
 
 const client = createPublicClient({
   transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
 });
 
+
 export default async function AddressPage({
   params,
 }: {
-  params: { address: string };
+  params: Promise<{ address: string }>;
 }) {
-  const address = params.address as `0x${string}`;
+  const address = (await params).address as `0x${string}`;
   try {
     const [balance, code] = await Promise.all([
       client.getBalance({ address }),
@@ -26,7 +28,7 @@ export default async function AddressPage({
         </h1>
         <div className="rounded border p-4">
           <div className="mb-2 break-all font-mono">{address}</div>
-          <div>Balance: {formatEther(balance)} PGC</div>
+          <div>Balance: {formatUnits(balance, DECIMALS)} {SYMBOL}</div>
           <div>Type: {isContract ? "Contract" : "Externally Owned Account"}</div>
         </div>
       </main>
