@@ -31,8 +31,6 @@ export default async function TxPage({
     ]);
 
     let value = tx.value;
-    let transferFrom = tx.from;
-    let transferTo = tx.to;
 
 
     for (const log of receipt.logs) {
