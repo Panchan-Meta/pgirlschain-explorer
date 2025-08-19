@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
+import Search from "@/components/search";
 
 interface Block {
   hash: `0x${string}`;
@@ -43,6 +44,8 @@ export default function Home() {
   return (
     <main className="mx-auto max-w-5xl p-6">
       <h1 className="text-3xl font-bold mb-6">PGirlsChain Explorer</h1>
+
+      <Search />
 
       {loading ? (
         <p>Loading…</p>
