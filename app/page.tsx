@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPublicClient, http } from "viem";
+
+interface Block {
+  hash: `0x${string}`;
+  number: number;
+}
+
+const client = createPublicClient({
+  transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
+});
 
 export default function Home() {
   const [height, setHeight] = useState<number | null>(null);
@@ -10,12 +20,17 @@ export default function Home() {
   useEffect(() => {
     async function run() {
       try {
-        const res = await fetch(
-          (process.env.NEXT_PUBLIC_EXPLORER_API || "") + "/summary"
-        );
-        const data = await res.json();
-        setHeight(data.latestHeight);
-        setLatest(data.latestBlocks as Block[]);
+        const latestNumber = await client.getBlockNumber();
+        setHeight(Number(latestNumber));
+        const blocks: Block[] = [];
+        for (let i = 0n; i < 5n && latestNumber >= i; i++) {
+          const b = await client.getBlock({ blockNumber: latestNumber - i });
+          blocks.push({
+            hash: b.hash as `0x${string}`,
+            number: Number(b.number),
+          });
+        }
+        setLatest(blocks);
       } catch (e) {
         console.error(e);
       } finally {
