@@ -17,6 +17,7 @@ const transferEvent = parseAbiItem(
   "event Transfer(address indexed from, address indexed to, uint256 value)"
 );
 
+
 export default async function TxPage({
   params,
 }: {
@@ -32,6 +33,7 @@ export default async function TxPage({
     let value = tx.value;
     let transferFrom = tx.from;
     let transferTo = tx.to;
+
 
     for (const log of receipt.logs) {
       try {
@@ -61,6 +63,7 @@ export default async function TxPage({
           <div>From: {transferFrom}</div>
           <div>To: {transferTo}</div>
           <div>
+
           </div>
         </div>
       </main>
