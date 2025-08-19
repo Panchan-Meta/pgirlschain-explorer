@@ -2,18 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
+import Search from "@/components/search";
 
 interface Block {
   hash: `0x${string}`;
-  number: number;
-}
-
-const client = createPublicClient({
-  transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
-});
-
-interface Block {
-  hash: string;
   number: number;
 }
 
@@ -24,6 +16,11 @@ export default function Home() {
 
   useEffect(() => {
     async function run() {
+      const client = createPublicClient({
+        transport: http(
+          process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8545"
+        ),
+      });
       try {
         const latestNumber = await client.getBlockNumber();
         setHeight(Number(latestNumber));
@@ -48,6 +45,8 @@ export default function Home() {
   return (
     <main className="mx-auto max-w-5xl p-6">
       <h1 className="text-3xl font-bold mb-6">PGirlsChain Explorer</h1>
+
+      <Search />
 
       {loading ? (
         <p>Loading…</p>
