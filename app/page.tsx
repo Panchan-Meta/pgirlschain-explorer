@@ -12,6 +12,11 @@ const client = createPublicClient({
   transport: http(process.env.NEXT_PUBLIC_RPC_URL || ""),
 });
 
+interface Block {
+  hash: string;
+  number: number;
+}
+
 export default function Home() {
   const [height, setHeight] = useState<number | null>(null);
   const [latest, setLatest] = useState<Block[]>([]);
